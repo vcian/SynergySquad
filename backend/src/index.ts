@@ -5,9 +5,11 @@ dotenv.config();
 import { dataSource } from './entities';
 import router from './routes/routes';
 import { notFound, globalErrorHandler } from './middleware/globalErrorHandler';
+import morgan from 'morgan';
 const app: Express = express();
 app.use(cors())
 app.use(express.json());
+app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
 dataSource
