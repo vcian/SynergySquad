@@ -60,7 +60,8 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const chatRepository = dataSource.getRepository(Chat);
   const originalPrompt: string = prompt;
   if (!prompt.match(/in json format/i)) {
-    prompt += ' in JSON format record limit 10';
+    prompt +=
+      'Return only list data in JSON format and return only 20 data not other fields like search data or sql query';
   }
   if (!session_id) {
     throw new Error('session id is not received');
