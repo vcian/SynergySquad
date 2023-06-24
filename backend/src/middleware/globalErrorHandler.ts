@@ -11,6 +11,8 @@ import Joi from 'joi';
  * @param {*} next
  */
 const globalErrorHandler = (err: any, req: any, res: any, next: any) => {
+  console.log('error');
+
   if (createHttpError.isHttpError(err)) {
     console.log(err);
     res.status(err.status).json({
@@ -39,4 +41,8 @@ const globalErrorHandler = (err: any, req: any, res: any, next: any) => {
   }
 };
 
-export default globalErrorHandler;
+const notFound = (req: any, res: any, next: any) => {
+  throw new createHttpError.NotFound(`Not Found - ${req.originalUrl}`);
+};
+
+export { notFound, globalErrorHandler };
