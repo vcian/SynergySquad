@@ -9,7 +9,7 @@ import { SqlDatabaseChain } from 'langchain/chains';
 
 const model = new OpenAI({
   openAIApiKey: process.env.API_KEY,
-  temperature: 0.8,
+  temperature: 0,
   modelName: 'gpt-3.5-turbo',
 });
 export const saveDBConfig = async (req: Request, res: Response) => {
@@ -40,6 +40,7 @@ export const saveDBConfig = async (req: Request, res: Response) => {
         session_id,
       });
     } catch (error) {
+      console.log('🚀 ~ file: controller.ts:43 ~ saveDBConfig ~ error:', error);
       res.status(400).send({
         status: 0,
         message: 'Invalid db config',
@@ -51,38 +52,43 @@ export const saveDBConfig = async (req: Request, res: Response) => {
 };
 
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
-  const { promt } = req.body;
-  const session_id = req.headers.session_id as string;
-  if (!session_id) {
-    throw new Error('session id is not received');
-  }
-  const dbRepository = dataSource.getRepository(DBConfig);
-  const config = await dbRepository.findOne({ where: { session_id } });
-  if (!config) {
-    return res.status(400).send({
-      status: 0,
-      message: 'No config found',
-    });
-  } else {
-    const { database, user, host, password } = config;
-    const type: any = config.type;
-    const connectorPackage = 'mysql2';
-    const db = await SqlDatabase.fromOptionsParams({
-      appDataSourceOptions: {
-        type,
-        host,
-        connectorPackage,
-        database,
-        username: user,
-        password,
-      },
-    });
-    const chain = new SqlDatabaseChain({
-      llm: model,
-      database: db,
-    });
-    const result = await chain.run(promt);
-    res.status(200).send(result);
+  try {
+    const { promt } = req.body;
+    const session_id = req.headers.session_id as string;
+    if (!session_id) {
+      throw new Error('session id is not received');
+    }
+    const dbRepository = dataSource.getRepository(DBConfig);
+    const config = await dbRepository.findOne({ where: { session_id } });
+    if (!config) {
+      return res.status(400).send({
+        status: 0,
+        message: 'No config found',
+      });
+    } else {
+      const { database, user, host, password } = config;
+      const type: any = config.type;
+      const connectorPackage = 'mysql2';
+      const db = await SqlDatabase.fromOptionsParams({
+        appDataSourceOptions: {
+          type,
+          host,
+          connectorPackage,
+          database,
+          username: user,
+          password,
+        },
+      });
+      const chain = new SqlDatabaseChain({
+        llm: model,
+        database: db,
+      });
+
+      const result = await chain.run(promt);
+      res.status(200).send(result);
+    }
+  } catch (error) {
+    console.log('🚀 ~ file: controller.ts:59 ~ chat ~ error:', error);
   }
 };
 
