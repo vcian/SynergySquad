@@ -1,6 +1,10 @@
 import { Router } from 'express';
-import { chat, saveDBConfig } from '../controllers/controller';
-import { validateChat, validateSaveDBConfig } from '../validators/validation';
+import { chat, chatDB, saveDBConfig } from '../controllers/controller';
+import {
+  validateChat,
+  validateChatData,
+  validateSaveDBConfig,
+} from '../validators/validation';
 import catchAsync from '../utils/catchAsync';
 import { validation } from '../middleware/globalErrorHandler';
 
@@ -12,6 +16,8 @@ router.post(
   catchAsync(saveDBConfig),
 );
 
-router.post("/chat", validation(validateChat), catchAsync(chat))
+router.post('/chat', validation(validateChat), catchAsync(chat));
+
+router.post('/data', validation(validateChatData), catchAsync(chatDB));
 
 export default router;

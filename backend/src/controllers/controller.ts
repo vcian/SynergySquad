@@ -7,6 +7,11 @@ import { OpenAI } from 'langchain/llms/openai';
 import { SqlDatabase } from 'langchain/sql_db';
 import { SqlDatabaseChain } from 'langchain/chains';
 
+const model = new OpenAI({
+  openAIApiKey: process.env.API_KEY,
+  temperature: 0.8,
+  modelName: 'gpt-3.5-turbo',
+});
 export const saveDBConfig = async (req: Request, res: Response) => {
   const { type, host, user, password, database } = req.body;
   if (type === 'mysql') {
@@ -44,11 +49,7 @@ export const saveDBConfig = async (req: Request, res: Response) => {
     res.status(400).send('db not supported');
   }
 };
-const model = new OpenAI({
-  openAIApiKey: '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',
-  temperature: 0,
-  modelName: 'gpt-3.5-turbo',
-});
+
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const { promt } = req.body;
   const session_id = req.headers.session_id as string;
@@ -64,7 +65,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     });
   } else {
     const { database, user, host, password } = config;
-    const type: any = config.type
+    const type: any = config.type;
     const connectorPackage = 'mysql2';
     const db = await SqlDatabase.fromOptionsParams({
       appDataSourceOptions: {
@@ -73,7 +74,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
         connectorPackage,
         database,
         username: user,
-        password
+        password,
       },
     });
     const chain = new SqlDatabaseChain({
@@ -82,5 +83,30 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     });
     const result = await chain.run(promt);
     res.status(200).send(result);
+  }
+};
+
+export const chatDB = async (req: Request, res: Response) => {
+  const { chat } = req.body;
+  try {
+    const db = await SqlDatabase.fromOptionsParams({
+      appDataSourceOptions: {
+        type: 'mysql',
+        host: 'localhost',
+        connectorPackage: 'mysql2',
+        database: 'user',
+        username: 'root',
+        password: 'root',
+      },
+    });
+    const chain = new SqlDatabaseChain({
+      llm: model,
+      database: db,
+    });
+    const result = await chain.run(chat);
+    res.status(200).send(result);
+  } catch (err: any) {
+    console.log('Error=======>', err);
+    res.send(err);
   }
 };
