@@ -55,16 +55,12 @@ const model = new OpenAI({
 });
 
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
-  let { promt } = req.body;
+  let { prompt } = req.body;
   const session_id = req.headers.session_id as string;
   const chatRepository = dataSource.getRepository(Chat);
-  const createdChat = chatRepository.create({
-    promt,
-    session_id: session_id,
-  });
-  await chatRepository.save(createdChat);
-  if (!promt.match(/in json format/i)) {
-    promt += 'in json format';
+  const originalPrompt: string = prompt;
+  if (!prompt.match(/in json format/i)) {
+    prompt += 'in JSON format list';
   }
   if (!session_id) {
     throw new Error('session id is not received');
@@ -98,11 +94,18 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
       chain = new SqlDatabaseChain({
         llm: model,
         database: db,
+        verbose: false,
       });
     }
 
-    const result = await chain.run(promt);
+    const result = await chain.run(prompt);
     (await redisClient).set('lastSession', session_id);
+    const createdChat = chatRepository.create({
+      prompt: originalPrompt,
+      session_id: session_id,
+      answer: result,
+    });
+    await chatRepository.save(createdChat);
     res.status(200).send(result);
   }
 };
@@ -114,7 +117,9 @@ export const getChat = async (
 ) => {
   try {
     const chatRepository = dataSource.getRepository(Chat);
-    const result = await chatRepository.find();
+    const result = await chatRepository.find({
+      where: { session_id: req.headers.session_id as string },
+    });
     res.send({
       status: 1,
       message: 'success',

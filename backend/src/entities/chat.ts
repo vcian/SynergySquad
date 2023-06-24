@@ -6,8 +6,13 @@ export class Chat {
   id!: number;
 
   @Column()
-  promt!: string;
-  
+  prompt!: string;
+
   @Column()
-  session_id!: string
+  session_id!: string;
+
+  @Column({
+    type: 'text',
+  })
+  answer!: string;
 }
