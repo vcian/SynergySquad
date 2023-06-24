@@ -45,4 +45,19 @@ const notFound = (req: any, res: any, next: any) => {
   throw new createHttpError.NotFound(`Not Found - ${req.originalUrl}`);
 };
 
-export { notFound, globalErrorHandler };
+const validation = (object: any) => async (req: any, res: any, next: any) => {
+  const params = { ...req.body, ...req.params };
+  const joiObj = await object.validate(params);
+  if ('error' in joiObj) {
+    return res.status(400).json({
+      statusCode: 400,
+      message: joiObj.error.message,
+      data: [],
+      errors: { invalid: 'Bad Request' },
+    });
+  }
+
+  next();
+};
+
+export { notFound, globalErrorHandler, validation };
