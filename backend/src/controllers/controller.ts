@@ -6,6 +6,7 @@ import { v4 as uuidv4, v4 } from 'uuid';
 import { OpenAI } from 'langchain/llms/openai';
 import { SqlDatabase } from 'langchain/sql_db';
 import { SqlDatabaseChain } from 'langchain/chains';
+import { Chat } from '../entities/chat';
 
 export const saveDBConfig = async (req: Request, res: Response) => {
   const { type, host, user, password, database } = req.body;
@@ -51,10 +52,16 @@ const model = new OpenAI({
 });
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
   let { promt } = req.body;
+  const session_id = req.headers.session_id as string;
+  const chatRepository = dataSource.getRepository(Chat);
+  const createdChat = chatRepository.create({
+    promt,
+    session_id: session_id
+  });
+  await chatRepository.save(createdChat);
   if (!promt.match(/in json format/i)) {
     promt += 'in json format';
   }
-  const session_id = req.headers.session_id as string;
   if (!session_id) {
     throw new Error('session id is not received');
   }
@@ -85,5 +92,26 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     });
     const result = await chain.run(promt);
     res.status(200).send(result);
+  }
+};
+
+export const getChat = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const chatRepository = dataSource.getRepository(Chat);
+    const result = await chatRepository.find();
+    res.send({
+      status: 1,
+      message: 'success',
+      result,
+    });
+  } catch (error) {
+    res.status(400).send({
+      status: 0,
+      message: 'failed',
+    });
   }
 };
