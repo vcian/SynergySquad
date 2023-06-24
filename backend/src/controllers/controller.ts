@@ -50,7 +50,10 @@ const model = new OpenAI({
   modelName: 'gpt-3.5-turbo',
 });
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
-  const { promt } = req.body;
+  let { promt } = req.body;
+  if (!promt.match(/in json format/i)) {
+    promt += 'in json format';
+  }
   const session_id = req.headers.session_id as string;
   if (!session_id) {
     throw new Error('session id is not received');
