@@ -45,7 +45,7 @@ export const saveDBConfig = async (req: Request, res: Response) => {
   }
 };
 const model = new OpenAI({
-  openAIApiKey: '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',
+  openAIApiKey: process.env.openAIKey,
   temperature: 0,
   modelName: 'gpt-3.5-turbo',
 });

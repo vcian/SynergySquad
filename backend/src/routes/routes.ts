@@ -12,6 +12,6 @@ router.post(
   catchAsync(saveDBConfig),
 );
 
-router.post("/chat", validation(validateChat), catchAsync(chat))
+router.post("/chat", validation(validateChat), chat)
 
 export default router;
