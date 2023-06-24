@@ -7,9 +7,9 @@ import router from './routes/routes';
 import { notFound, globalErrorHandler } from './middleware/globalErrorHandler';
 import morgan from 'morgan';
 const app: Express = express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
 dataSource
@@ -21,8 +21,6 @@ dataSource
     console.log('Error during Data Source initialization:', err);
   });
 const port = process.env.PORT;
-console.log(__dirname);
-
 app.use(notFound);
 app.use(globalErrorHandler);
 
