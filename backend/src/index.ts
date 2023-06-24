@@ -4,6 +4,7 @@ import cors from 'cors';
 dotenv.config();
 import { dataSource } from './entities';
 import router from './routes/routes';
+import { notFound, globalErrorHandler } from './middleware/globalErrorHandler';
 const app: Express = express();
 app.use(cors())
 app.use(express.json());
@@ -19,6 +20,10 @@ dataSource
   });
 const port = process.env.PORT;
 console.log(__dirname);
+
+app.use(notFound);
+app.use(globalErrorHandler);
+
 app.listen(port, () => {
   console.log(`⚡️ Server started at PORT: ${port}`);
 });
