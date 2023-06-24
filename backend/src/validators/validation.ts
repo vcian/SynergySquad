@@ -10,5 +10,5 @@ export const validateSaveDBConfig = Joi.object({
 });
 
 export const validateChat = Joi.object({
-  prompt: Joi.string().required(),
+  promt: Joi.string().required(),
 });
