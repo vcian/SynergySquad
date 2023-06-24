@@ -60,7 +60,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const chatRepository = dataSource.getRepository(Chat);
   const originalPrompt: string = prompt;
   if (!prompt.match(/in json format/i)) {
-    prompt += 'in JSON format list';
+    prompt += ' in JSON format';
   }
   if (!session_id) {
     throw new Error('session id is not received');
