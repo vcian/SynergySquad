@@ -8,10 +8,10 @@ export const validateSaveDBConfig = (
 ) => {
   const schema = Joi.object({
     type: Joi.string().valid('mysql').required(),
-    hostname: Joi.string().required(),
+    host: Joi.string().required(),
     database: Joi.string().required(),
-    username: Joi.string().optional(),
-    password: Joi.string().optional(),
+    user: Joi.string().optional(),
+    password: Joi.string().optional().allow('', null),
   });
   const resp = schema.validate(req.body);
   if (resp.error) {

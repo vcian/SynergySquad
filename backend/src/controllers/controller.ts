@@ -5,12 +5,12 @@ import { dataSource } from '../entities';
 import { v4 as uuidv4, v4 } from 'uuid';
 
 export const saveDBConfig = async (req: Request, res: Response) => {
-  const { type, hostname, username, password, database } = req.body;
+  const { type, host, user, password, database } = req.body;
   if (type === 'mysql') {
     try {
       await connectMysql({
-        host: hostname,
-        user: username,
+        host,
+        user,
         password,
         database,
       });
@@ -20,8 +20,8 @@ export const saveDBConfig = async (req: Request, res: Response) => {
         session_id: session_id,
         type,
         database,
-        host: hostname,
-        username,
+        host,
+        user,
         password,
       });
       await dbRepository.save(result);

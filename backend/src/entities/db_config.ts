@@ -15,11 +15,11 @@ export class DBConfig {
   host!: string;
 
   @Column({ default: null })
-  username?: string;
+  user?: string;
 
   @Column({ default: null })
   password?: string;
 
   @Column({ default: null })
-  database!: string;
+  database?: string;
 }

@@ -1,9 +1,11 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 dotenv.config();
 import { dataSource } from './entities';
 import router from './routes/routes';
 const app: Express = express();
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
