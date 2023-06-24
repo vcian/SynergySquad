@@ -64,7 +64,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     });
   } else {
     const { database, user, host, password } = config;
-    const type: any = config.type
+    const type: any = config.type;
     const connectorPackage = 'mysql2';
     const db = await SqlDatabase.fromOptionsParams({
       appDataSourceOptions: {
@@ -73,7 +73,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
         connectorPackage,
         database,
         username: user,
-        password
+        password,
       },
     });
     const chain = new SqlDatabaseChain({
