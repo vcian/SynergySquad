@@ -5,16 +5,26 @@ import {
   InputGroup,
   InputLeftAddon,
 } from "@chakra-ui/react";
-import { Image } from "@chakra-ui/react";
+import { Image, useToast } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as React from "react";
 
 import DbIcon from "../../assets/db-icon.png";
 import { onLoginSubmit } from "./login.service";
 import { useNavigate } from "react-router-dom";
+import {
+  getLocalStorageKey,
+  setLocalStorageKey,
+} from "../../utils/local-storage.service";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  React.useEffect(() => {
+    if (getLocalStorageKey("session_id")) {
+      navigate("/chat");
+    }
+  }, []);
   const loginForm = useFormik({
     initialValues: {
       host: "",
@@ -23,9 +33,17 @@ const LoginPage = () => {
       password: "",
     },
     onSubmit: async (values) => {
-      const loginResponse = await onLoginSubmit(values);
-      debugger;
+      const loginResponse = await onLoginSubmit(values).catch((error) => {
+        toast({
+          status: "error",
+          duration: 900,
+          colorScheme: "red",
+          variant: "solid",
+          title: error.message,
+        });
+      });
       if (loginResponse && loginResponse.data) {
+        setLocalStorageKey("session_id", loginResponse.data.session_id);
         navigate("/chat");
       }
     },

@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import path from 'path';
 
 const app: Express = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));

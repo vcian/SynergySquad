@@ -65,9 +65,12 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const session_id = req.headers.session_id as string;
   const chatRepository = dataSource.getRepository(Chat);
   const originalPrompt: string = prompt;
-  if (!prompt.match(/in json format/i)) {
+  if (prompt.includes('bar chart')) {
     prompt +=
-      'Return only list data in JSON format and return only 20 data not other fields like search data or sql query';
+      ". Generate the data in JSON format where requested field is in key and its corresponding count is in value and don't return any SQL query and any other data";
+  } else {
+    prompt +=
+      '. Return only list data in JSON format and return only 30 data not other fields like search data or sql query';
   }
   if (!session_id) {
     throw new Error('session id is not received');
