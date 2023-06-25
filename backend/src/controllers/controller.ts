@@ -7,6 +7,12 @@ import { OpenAI } from 'langchain/llms/openai';
 import { SqlDatabase } from 'langchain/sql_db';
 import { SqlDatabaseChain } from 'langchain/chains';
 import { Chat } from '../entities/chat';
+import puppeteer from 'puppeteer';
+import path from 'path';
+import ejs from 'ejs';
+import createHttpError from 'http-errors';
+import { downloadpdf } from '../utils/print';
+import { emailSend } from '../utils/sendMail';
 
 const redisClient = (async () => await connectRedis())();
 let db: any = null;
@@ -135,4 +141,24 @@ export const getChat = async (
       message: 'failed',
     });
   }
+};
+
+export const sendMail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { data, header, email } = req.body;
+
+  const filePath = path.join(__dirname, 'index.ejs');
+
+  ejs.renderFile(filePath, { header, data }, async (err, html) => {
+    if (err) {
+      throw createHttpError(500, 'Server is down');
+    }
+    await downloadpdf(html);
+    await emailSend('lb.madesia@viitor.cloud');
+    // enviar para o navegador
+    return res.send('success');
+  });
 };
