@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <h1>The table element</h1>
+
+    <table style="border: 1px solid black">
+      <tr>
+        <% for(let i=0; i < header.length; i++) { %>
+        <th><%= header[i] %></th>
+        <% } %>
+      </tr>
+      <% for(let j=0; j < data.length; j++) { %>
+      <tr>
+        <% for(const key of Object.keys(data[j])) { %>
+        <td><%= data[j][key] %></td>
+        <% } %>
+      </tr>
+      <% } %>
+    </table>
+  </body>
+</html>

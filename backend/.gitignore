@@ -2,3 +2,5 @@
 build
 .env
 db
+
+node_modules/*

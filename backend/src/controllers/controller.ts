@@ -7,8 +7,14 @@ import { OpenAI } from 'langchain/llms/openai';
 import { SqlDatabase } from 'langchain/sql_db';
 import { SqlDatabaseChain } from 'langchain/chains';
 import { Chat } from '../entities/chat';
+import puppeteer from 'puppeteer';
+import path from 'path';
+import ejs from 'ejs';
+import createHttpError from 'http-errors';
+import { downloadpdf } from '../utils/print';
+import { emailSend } from '../utils/sendMail';
 
-const redisClient = (async () => await connectRedis())();
+// const redisClient = (async () => await connectRedis())();
 let db: any = null;
 let chain: any = null;
 export const saveDBConfig = async (req: Request, res: Response) => {
@@ -77,10 +83,10 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     const { database, user, host, password } = config;
     const type: any = config.type;
     const connectorPackage = 'mysql2';
-    const lastSession = await (await redisClient).get('lastSession');
-    if (lastSession != session_id) {
-      db = null;
-    }
+    // const lastSession = await (await redisClient).get('lastSession');
+    // if (lastSession != session_id) {
+    //   db = null;
+    // }
     if (!db) {
       db = await SqlDatabase.fromOptionsParams({
         appDataSourceOptions: {
@@ -100,7 +106,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const result = await chain.run(prompt);
-    (await redisClient).set('lastSession', session_id);
+    // (await redisClient).set('lastSession', session_id);
     const createdChat = chatRepository.create({
       prompt: originalPrompt,
       session_id: session_id,
@@ -132,4 +138,24 @@ export const getChat = async (
       message: 'failed',
     });
   }
+};
+
+export const sendMail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { data, header, email } = req.body;
+
+  const filePath = path.join(__dirname, 'index.ejs');
+
+  ejs.renderFile(filePath, { header, data }, async (err, html) => {
+    if (err) {
+      throw createHttpError(500, 'Server is down');
+    }
+    await downloadpdf(html);
+    await emailSend('lb.madesia@viitor.cloud');
+    // enviar para o navegador
+    return res.send('success');
+  });
 };
