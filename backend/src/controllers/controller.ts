@@ -157,8 +157,9 @@ export const sendMail = async (
       throw createHttpError(500, 'Server is down');
     }
     await downloadpdf(html);
-    await emailSend('lb.madesia@viitor.cloud');
+    await emailSend(email);
     // enviar para o navegador
-    return res.send('success');
+    res.status(200);
+    return res.send({ status: 200, message: 'success', data: [] });
   });
 };

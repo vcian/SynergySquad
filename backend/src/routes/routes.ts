@@ -21,6 +21,5 @@ router.post('/chat', validation(validateChat), chat);
 
 router.get('/chat', getChat);
 router.post('/send-main', catchAsync(sendMail));
-router.get('/send-main', catchAsync(sendMail));
 
 export default router;
