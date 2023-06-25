@@ -11,6 +11,7 @@ import "./index.css";
 import ChatPage from "./Pages/Chat/Chat.page.jsx";
 
 const router = createBrowserRouter([
+  { path: "/", element: <LoginPage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/chat", element: <ChatPage /> },
 ]);

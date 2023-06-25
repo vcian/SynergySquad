@@ -1,13 +1,10 @@
-import { axiosInstance } from "../../axios";
-import axios from "axios";
-import { EnvironmentConstants } from "../../utils/Constants";
+import { http } from "../../axios";
 
 export const onLoginSubmit = async (values) => {
-  return axiosInstance.post(
-    `connect`,
-    { ...values, type: "mysql" },
-    {
-      headers: { "X-User-Id": null },
-    }
-  );
+  debugger;
+  return http({
+    request: "connect",
+    method: "POST",
+    data: { ...values, type: "mysql" },
+  });
 };

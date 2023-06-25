@@ -1,5 +1,6 @@
-import { axiosInstance } from "../../axios";
+import { http } from "../../axios";
 
 export async function postChat(values) {
-  return axiosInstance.post("chat", values);
+  debugger;
+  return http({ request: "chat", data: values, method: "POST" });
 }
