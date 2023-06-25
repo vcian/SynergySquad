@@ -13,8 +13,8 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-import pdfmake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
+import * as pdfmake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
 
 const ChatTable = ({ data, columns }) => {
   const tableColumns = columns.map((column) => <Th>{column}</Th>);
